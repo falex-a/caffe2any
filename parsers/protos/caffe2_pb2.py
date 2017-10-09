@@ -19,8 +19,7 @@ _sym_db = _symbol_database.Default()
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='protos/caffe2.proto',
   package='caffe2',
-  syntax='proto2',
-  serialized_pb=_b('\n\x13protos/caffe2.proto\x12\x06\x63\x61\x66\x66\x65\x32\"\x8e\x04\n\x0bTensorProto\x12\x0c\n\x04\x64ims\x18\x01 \x03(\x03\x12\x36\n\tdata_type\x18\x02 \x01(\x0e\x32\x1c.caffe2.TensorProto.DataType:\x05\x46LOAT\x12\x16\n\nfloat_data\x18\x03 \x03(\x02\x42\x02\x10\x01\x12\x16\n\nint32_data\x18\x04 \x03(\x05\x42\x02\x10\x01\x12\x11\n\tbyte_data\x18\x05 \x01(\x0c\x12\x13\n\x0bstring_data\x18\x06 \x03(\x0c\x12\x17\n\x0b\x64ouble_data\x18\t \x03(\x01\x42\x02\x10\x01\x12\x16\n\nint64_data\x18\n \x03(\x03\x42\x02\x10\x01\x12\x0c\n\x04name\x18\x07 \x01(\t\x12+\n\rdevice_detail\x18\x08 \x01(\x0b\x32\x14.caffe2.DeviceOption\x12,\n\x07segment\x18\x0b \x01(\x0b\x32\x1b.caffe2.TensorProto.Segment\x1a%\n\x07Segment\x12\r\n\x05\x62\x65gin\x18\x01 \x02(\x03\x12\x0b\n\x03\x65nd\x18\x02 \x02(\x03\"\x9f\x01\n\x08\x44\x61taType\x12\r\n\tUNDEFINED\x10\x00\x12\t\n\x05\x46LOAT\x10\x01\x12\t\n\x05INT32\x10\x02\x12\x08\n\x04\x42YTE\x10\x03\x12\n\n\x06STRING\x10\x04\x12\x08\n\x04\x42OOL\x10\x05\x12\t\n\x05UINT8\x10\x06\x12\x08\n\x04INT8\x10\x07\x12\n\n\x06UINT16\x10\x08\x12\t\n\x05INT16\x10\t\x12\t\n\x05INT64\x10\n\x12\x0b\n\x07\x46LOAT16\x10\x0c\x12\n\n\x06\x44OUBLE\x10\r\"\x7f\n\x0cQTensorProto\x12\x0c\n\x04\x64ims\x18\x01 \x03(\x03\x12\x11\n\tprecision\x18\x02 \x02(\x05\x12\r\n\x05scale\x18\x03 \x02(\x01\x12\x0c\n\x04\x62ias\x18\x04 \x02(\x01\x12\x11\n\tis_signed\x18\x05 \x02(\x08\x12\x10\n\x04\x64\x61ta\x18\x06 \x03(\x05\x42\x02\x10\x01\x12\x0c\n\x04name\x18\x07 \x01(\t\"3\n\x0cTensorProtos\x12#\n\x06protos\x18\x01 \x03(\x0b\x32\x13.caffe2.TensorProto\"\x95\x01\n\x0bTensorShape\x12\x0c\n\x04\x64ims\x18\x01 \x03(\x03\x12\x36\n\tdata_type\x18\x02 \x01(\x0e\x32\x1c.caffe2.TensorProto.DataType:\x05\x46LOAT\x12\x14\n\x0cunknown_dims\x18\x03 \x03(\x05\x12\x1c\n\runknown_shape\x18\x04 \x01(\x08:\x05\x66\x61lse\x12\x0c\n\x04name\x18\x05 \x01(\t\"3\n\x0cTensorShapes\x12#\n\x06shapes\x18\x01 \x03(\x0b\x32\x13.caffe2.TensorShape\"\xa1\x01\n\x08\x41rgument\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\t\n\x01\x66\x18\x02 \x01(\x02\x12\t\n\x01i\x18\x03 \x01(\x03\x12\t\n\x01s\x18\x04 \x01(\x0c\x12\x19\n\x01n\x18\x08 \x01(\x0b\x32\x0e.caffe2.NetDef\x12\x0e\n\x06\x66loats\x18\x05 \x03(\x02\x12\x0c\n\x04ints\x18\x06 \x03(\x03\x12\x0f\n\x07strings\x18\x07 \x03(\x0c\x12\x1c\n\x04nets\x18\t \x03(\x0b\x32\x0e.caffe2.NetDef\"P\n\x0c\x44\x65viceOption\x12\x16\n\x0b\x64\x65vice_type\x18\x01 \x01(\x05:\x01\x30\x12\x13\n\x0b\x63uda_gpu_id\x18\x02 \x01(\x05\x12\x13\n\x0brandom_seed\x18\x03 \x01(\r\"\xda\x01\n\x0bOperatorDef\x12\r\n\x05input\x18\x01 \x03(\t\x12\x0e\n\x06output\x18\x02 \x03(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x0c\n\x04type\x18\x04 \x01(\t\x12\x1d\n\x03\x61rg\x18\x05 \x03(\x0b\x32\x10.caffe2.Argument\x12+\n\rdevice_option\x18\x06 \x01(\x0b\x32\x14.caffe2.DeviceOption\x12\x0e\n\x06\x65ngine\x18\x07 \x01(\t\x12\x15\n\rcontrol_input\x18\x08 \x03(\t\x12\x1d\n\x0eis_gradient_op\x18\t \x01(\x08:\x05\x66\x61lse\"\xdb\x01\n\x06NetDef\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x1f\n\x02op\x18\x02 \x03(\x0b\x32\x13.caffe2.OperatorDef\x12\x0c\n\x04type\x18\x03 \x01(\t\x12\x17\n\x0bnum_workers\x18\x04 \x01(\x05\x42\x02\x18\x01\x12+\n\rdevice_option\x18\x05 \x01(\x0b\x32\x14.caffe2.DeviceOption\x12\x1d\n\x03\x61rg\x18\x06 \x03(\x0b\x32\x10.caffe2.Argument\x12\x16\n\x0e\x65xternal_input\x18\x07 \x03(\t\x12\x17\n\x0f\x65xternal_output\x18\x08 \x03(\t\"\xcf\x02\n\rExecutionStep\x12\x0c\n\x04name\x18\x01 \x01(\t\x12&\n\x07substep\x18\x02 \x03(\x0b\x32\x15.caffe2.ExecutionStep\x12\x0f\n\x07network\x18\x03 \x03(\t\x12\x10\n\x08num_iter\x18\x04 \x01(\x03\x12\x1c\n\x10\x63riteria_network\x18\x05 \x01(\tB\x02\x18\x01\x12\x12\n\nreport_net\x18\x07 \x01(\t\x12\x17\n\x0freport_interval\x18\x08 \x01(\x05\x12\x14\n\x0crun_every_ms\x18\x0b \x01(\x03\x12\x1b\n\x13\x63oncurrent_substeps\x18\x06 \x01(\x08\x12\x18\n\x10should_stop_blob\x18\t \x01(\t\x12\x11\n\tonly_once\x18\n \x01(\x08\x12\x18\n\x10\x63reate_workspace\x18\x0c \x01(\x08\x12 \n\x18num_concurrent_instances\x18\r \x01(\x05\"g\n\x07PlanDef\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x1f\n\x07network\x18\x02 \x03(\x0b\x32\x0e.caffe2.NetDef\x12-\n\x0e\x65xecution_step\x18\x03 \x03(\x0b\x32\x15.caffe2.ExecutionStep\"\xba\x01\n\tBlobProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0c\n\x04type\x18\x02 \x01(\t\x12#\n\x06tensor\x18\x03 \x01(\x0b\x32\x13.caffe2.TensorProto\x12\x0f\n\x07\x63ontent\x18\x04 \x01(\x0c\x12%\n\x07qtensor\x18\x05 \x01(\x0b\x32\x14.caffe2.QTensorProto\x12\x1a\n\x12\x63ontent_num_chunks\x18\x06 \x01(\x05\x12\x18\n\x10\x63ontent_chunk_id\x18\x07 \x01(\x05\"K\n\rDBReaderProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0e\n\x06source\x18\x02 \x01(\t\x12\x0f\n\x07\x64\x62_type\x18\x03 \x01(\t\x12\x0b\n\x03key\x18\x04 \x01(\t*d\n\nDeviceType\x12\x07\n\x03\x43PU\x10\x00\x12\x08\n\x04\x43UDA\x10\x01\x12\n\n\x06MKLDNN\x10\x02\x12!\n\x1d\x43OMPILE_TIME_MAX_DEVICE_TYPES\x10\x03\x12\x14\n\rONLY_FOR_TEST\x10\xc5\xde\xfb\t')
+  serialized_pb=_b('\n\x13protos/caffe2.proto\x12\x06\x63\x61\x66\x66\x65\x32\"\x8e\x04\n\x0bTensorProto\x12\x0c\n\x04\x64ims\x18\x01 \x03(\x03\x12\x36\n\tdata_type\x18\x02 \x01(\x0e\x32\x1c.caffe2.TensorProto.DataType:\x05\x46LOAT\x12\x16\n\nfloat_data\x18\x03 \x03(\x02\x42\x02\x10\x01\x12\x16\n\nint32_data\x18\x04 \x03(\x05\x42\x02\x10\x01\x12\x11\n\tbyte_data\x18\x05 \x01(\x0c\x12\x13\n\x0bstring_data\x18\x06 \x03(\x0c\x12\x17\n\x0b\x64ouble_data\x18\t \x03(\x01\x42\x02\x10\x01\x12\x16\n\nint64_data\x18\n \x03(\x03\x42\x02\x10\x01\x12\x0c\n\x04name\x18\x07 \x01(\t\x12+\n\rdevice_detail\x18\x08 \x01(\x0b\x32\x14.caffe2.DeviceOption\x12,\n\x07segment\x18\x0b \x01(\x0b\x32\x1b.caffe2.TensorProto.Segment\x1a%\n\x07Segment\x12\r\n\x05\x62\x65gin\x18\x01 \x02(\x03\x12\x0b\n\x03\x65nd\x18\x02 \x02(\x03\"\x9f\x01\n\x08\x44\x61taType\x12\r\n\tUNDEFINED\x10\x00\x12\t\n\x05\x46LOAT\x10\x01\x12\t\n\x05INT32\x10\x02\x12\x08\n\x04\x42YTE\x10\x03\x12\n\n\x06STRING\x10\x04\x12\x08\n\x04\x42OOL\x10\x05\x12\t\n\x05UINT8\x10\x06\x12\x08\n\x04INT8\x10\x07\x12\n\n\x06UINT16\x10\x08\x12\t\n\x05INT16\x10\t\x12\t\n\x05INT64\x10\n\x12\x0b\n\x07\x46LOAT16\x10\x0c\x12\n\n\x06\x44OUBLE\x10\r\"\x7f\n\x0cQTensorProto\x12\x0c\n\x04\x64ims\x18\x01 \x03(\x03\x12\x11\n\tprecision\x18\x02 \x02(\x05\x12\r\n\x05scale\x18\x03 \x02(\x01\x12\x0c\n\x04\x62ias\x18\x04 \x02(\x01\x12\x11\n\tis_signed\x18\x05 \x02(\x08\x12\x10\n\x04\x64\x61ta\x18\x06 \x03(\x05\x42\x02\x10\x01\x12\x0c\n\x04name\x18\x07 \x01(\t\"3\n\x0cTensorProtos\x12#\n\x06protos\x18\x01 \x03(\x0b\x32\x13.caffe2.TensorProto\"\x95\x01\n\x0bTensorShape\x12\x0c\n\x04\x64ims\x18\x01 \x03(\x03\x12\x36\n\tdata_type\x18\x02 \x01(\x0e\x32\x1c.caffe2.TensorProto.DataType:\x05\x46LOAT\x12\x14\n\x0cunknown_dims\x18\x03 \x03(\x05\x12\x1c\n\runknown_shape\x18\x04 \x01(\x08:\x05\x66\x61lse\x12\x0c\n\x04name\x18\x05 \x01(\t\"3\n\x0cTensorShapes\x12#\n\x06shapes\x18\x01 \x03(\x0b\x32\x13.caffe2.TensorShape\"\xa1\x01\n\x08\x41rgument\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\t\n\x01\x66\x18\x02 \x01(\x02\x12\t\n\x01i\x18\x03 \x01(\x03\x12\t\n\x01s\x18\x04 \x01(\x0c\x12\x19\n\x01n\x18\x08 \x01(\x0b\x32\x0e.caffe2.NetDef\x12\x0e\n\x06\x66loats\x18\x05 \x03(\x02\x12\x0c\n\x04ints\x18\x06 \x03(\x03\x12\x0f\n\x07strings\x18\x07 \x03(\x0c\x12\x1c\n\x04nets\x18\t \x03(\x0b\x32\x0e.caffe2.NetDef\"c\n\x0c\x44\x65viceOption\x12\x16\n\x0b\x64\x65vice_type\x18\x01 \x01(\x05:\x01\x30\x12\x13\n\x0b\x63uda_gpu_id\x18\x02 \x01(\x05\x12\x13\n\x0brandom_seed\x18\x03 \x01(\r\x12\x11\n\tnode_name\x18\x04 \x01(\t\"\xda\x01\n\x0bOperatorDef\x12\r\n\x05input\x18\x01 \x03(\t\x12\x0e\n\x06output\x18\x02 \x03(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x0c\n\x04type\x18\x04 \x01(\t\x12\x1d\n\x03\x61rg\x18\x05 \x03(\x0b\x32\x10.caffe2.Argument\x12+\n\rdevice_option\x18\x06 \x01(\x0b\x32\x14.caffe2.DeviceOption\x12\x0e\n\x06\x65ngine\x18\x07 \x01(\t\x12\x15\n\rcontrol_input\x18\x08 \x03(\t\x12\x1d\n\x0eis_gradient_op\x18\t \x01(\x08:\x05\x66\x61lse\"\xdb\x01\n\x06NetDef\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x1f\n\x02op\x18\x02 \x03(\x0b\x32\x13.caffe2.OperatorDef\x12\x0c\n\x04type\x18\x03 \x01(\t\x12\x17\n\x0bnum_workers\x18\x04 \x01(\x05\x42\x02\x18\x01\x12+\n\rdevice_option\x18\x05 \x01(\x0b\x32\x14.caffe2.DeviceOption\x12\x1d\n\x03\x61rg\x18\x06 \x03(\x0b\x32\x10.caffe2.Argument\x12\x16\n\x0e\x65xternal_input\x18\x07 \x03(\t\x12\x17\n\x0f\x65xternal_output\x18\x08 \x03(\t\"\xcf\x02\n\rExecutionStep\x12\x0c\n\x04name\x18\x01 \x01(\t\x12&\n\x07substep\x18\x02 \x03(\x0b\x32\x15.caffe2.ExecutionStep\x12\x0f\n\x07network\x18\x03 \x03(\t\x12\x10\n\x08num_iter\x18\x04 \x01(\x03\x12\x1c\n\x10\x63riteria_network\x18\x05 \x01(\tB\x02\x18\x01\x12\x12\n\nreport_net\x18\x07 \x01(\t\x12\x17\n\x0freport_interval\x18\x08 \x01(\x05\x12\x14\n\x0crun_every_ms\x18\x0b \x01(\x03\x12\x1b\n\x13\x63oncurrent_substeps\x18\x06 \x01(\x08\x12\x18\n\x10should_stop_blob\x18\t \x01(\t\x12\x11\n\tonly_once\x18\n \x01(\x08\x12\x18\n\x10\x63reate_workspace\x18\x0c \x01(\x08\x12 \n\x18num_concurrent_instances\x18\r \x01(\x05\"g\n\x07PlanDef\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x1f\n\x07network\x18\x02 \x03(\x0b\x32\x0e.caffe2.NetDef\x12-\n\x0e\x65xecution_step\x18\x03 \x03(\x0b\x32\x15.caffe2.ExecutionStep\"\xba\x01\n\tBlobProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0c\n\x04type\x18\x02 \x01(\t\x12#\n\x06tensor\x18\x03 \x01(\x0b\x32\x13.caffe2.TensorProto\x12\x0f\n\x07\x63ontent\x18\x04 \x01(\x0c\x12%\n\x07qtensor\x18\x05 \x01(\x0b\x32\x14.caffe2.QTensorProto\x12\x1a\n\x12\x63ontent_num_chunks\x18\x06 \x01(\x05\x12\x18\n\x10\x63ontent_chunk_id\x18\x07 \x01(\x05\"K\n\rDBReaderProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0e\n\x06source\x18\x02 \x01(\t\x12\x0f\n\x07\x64\x62_type\x18\x03 \x01(\t\x12\x0b\n\x03key\x18\x04 \x01(\t*d\n\nDeviceType\x12\x07\n\x03\x43PU\x10\x00\x12\x08\n\x04\x43UDA\x10\x01\x12\n\n\x06MKLDNN\x10\x02\x12!\n\x1d\x43OMPILE_TIME_MAX_DEVICE_TYPES\x10\x03\x12\x14\n\rONLY_FOR_TEST\x10\xc5\xde\xfb\t')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -53,8 +52,8 @@ _DEVICETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2345,
-  serialized_end=2445,
+  serialized_start=2364,
+  serialized_end=2464,
 )
 _sym_db.RegisterEnumDescriptor(_DEVICETYPE)
 
@@ -162,7 +161,6 @@ _TENSORPROTO_SEGMENT = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -263,7 +261,6 @@ _TENSORPROTO = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -296,14 +293,14 @@ _QTENSORPROTO = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='scale', full_name='caffe2.QTensorProto.scale', index=2,
       number=3, type=1, cpp_type=5, label=2,
-      has_default_value=False, default_value=float(0),
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='bias', full_name='caffe2.QTensorProto.bias', index=3,
       number=4, type=1, cpp_type=5, label=2,
-      has_default_value=False, default_value=float(0),
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -336,7 +333,6 @@ _QTENSORPROTO = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -367,7 +363,6 @@ _TENSORPROTOS = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -426,7 +421,6 @@ _TENSORSHAPE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -457,7 +451,6 @@ _TENSORSHAPES = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -483,7 +476,7 @@ _ARGUMENT = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='f', full_name='caffe2.Argument.f', index=1,
       number=2, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -544,7 +537,6 @@ _ARGUMENT = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -581,6 +573,13 @@ _DEVICEOPTION = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='node_name', full_name='caffe2.DeviceOption.node_name', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -589,12 +588,11 @@ _DEVICEOPTION = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
   serialized_start=1111,
-  serialized_end=1191,
+  serialized_end=1210,
 )
 
 
@@ -676,12 +674,11 @@ _OPERATORDEF = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1194,
-  serialized_end=1412,
+  serialized_start=1213,
+  serialized_end=1431,
 )
 
 
@@ -756,12 +753,11 @@ _NETDEF = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1415,
-  serialized_end=1634,
+  serialized_start=1434,
+  serialized_end=1653,
 )
 
 
@@ -871,12 +867,11 @@ _EXECUTIONSTEP = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1637,
-  serialized_end=1972,
+  serialized_start=1656,
+  serialized_end=1991,
 )
 
 
@@ -916,12 +911,11 @@ _PLANDEF = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1974,
-  serialized_end=2077,
+  serialized_start=1993,
+  serialized_end=2096,
 )
 
 
@@ -989,12 +983,11 @@ _BLOBPROTO = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2080,
-  serialized_end=2266,
+  serialized_start=2099,
+  serialized_end=2285,
 )
 
 
@@ -1041,12 +1034,11 @@ _DBREADERPROTO = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2268,
-  serialized_end=2343,
+  serialized_start=2287,
+  serialized_end=2362,
 )
 
 _TENSORPROTO_SEGMENT.containing_type = _TENSORPROTO

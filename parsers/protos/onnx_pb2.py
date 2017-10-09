@@ -19,8 +19,7 @@ _sym_db = _symbol_database.Default()
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='protos/onnx.proto',
   package='onnx',
-  syntax='proto2',
-  serialized_pb=_b('\n\x11protos/onnx.proto\x12\x04onnx\"\xef\x01\n\x0e\x41ttributeProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\t\n\x01\x66\x18\x02 \x01(\x02\x12\t\n\x01i\x18\x03 \x01(\x03\x12\t\n\x01s\x18\x04 \x01(\x0c\x12\x1c\n\x01t\x18\x05 \x01(\x0b\x32\x11.onnx.TensorProto\x12\x1b\n\x01g\x18\x06 \x01(\x0b\x32\x10.onnx.GraphProto\x12\x0e\n\x06\x66loats\x18\x07 \x03(\x02\x12\x0c\n\x04ints\x18\x08 \x03(\x03\x12\x0f\n\x07strings\x18\t \x03(\x0c\x12\"\n\x07tensors\x18\n \x03(\x0b\x32\x11.onnx.TensorProto\x12 \n\x06graphs\x18\x0b \x03(\x0b\x32\x10.onnx.GraphProto\"\x86\x01\n\tNodeProto\x12\r\n\x05input\x18\x01 \x03(\t\x12\x0e\n\x06output\x18\x02 \x03(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x0f\n\x07op_type\x18\x04 \x01(\t\x12\'\n\tattribute\x18\x05 \x03(\x0b\x32\x14.onnx.AttributeProto\x12\x12\n\ndoc_string\x18\x06 \x01(\t\"\xe8\x01\n\nGraphProto\x12\x1d\n\x04node\x18\x01 \x03(\x0b\x32\x0f.onnx.NodeProto\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05input\x18\x03 \x03(\t\x12\x0e\n\x06output\x18\x04 \x03(\t\x12&\n\x0binitializer\x18\x05 \x03(\x0b\x32\x11.onnx.TensorProto\x12\x12\n\nir_version\x18\x06 \x01(\x03\x12\x18\n\x10producer_version\x18\x07 \x01(\x03\x12\x14\n\x0cproducer_tag\x18\x08 \x01(\t\x12\x0e\n\x06\x64omain\x18\t \x01(\t\x12\x12\n\ndoc_string\x18\n \x01(\t\"\xa6\x03\n\x0bTensorProto\x12\x0c\n\x04\x64ims\x18\x01 \x03(\x03\x12-\n\tdata_type\x18\x02 \x01(\x0e\x32\x1a.onnx.TensorProto.DataType\x12*\n\x07segment\x18\x03 \x01(\x0b\x32\x19.onnx.TensorProto.Segment\x12\x16\n\nfloat_data\x18\x04 \x03(\x02\x42\x02\x10\x01\x12\x16\n\nint32_data\x18\x05 \x03(\x05\x42\x02\x10\x01\x12\x13\n\x0bstring_data\x18\x06 \x03(\x0c\x12\x16\n\nint64_data\x18\x07 \x03(\x03\x42\x02\x10\x01\x12\x0c\n\x04name\x18\x08 \x01(\t\x12\x10\n\x08raw_data\x18\t \x01(\x0c\x1a%\n\x07Segment\x12\r\n\x05\x62\x65gin\x18\x01 \x01(\x03\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x03\"\x89\x01\n\x08\x44\x61taType\x12\r\n\tUNDEFINED\x10\x00\x12\t\n\x05\x46LOAT\x10\x01\x12\t\n\x05UINT8\x10\x02\x12\x08\n\x04INT8\x10\x03\x12\n\n\x06UINT16\x10\x04\x12\t\n\x05INT16\x10\x05\x12\t\n\x05INT32\x10\x06\x12\t\n\x05INT64\x10\x07\x12\n\n\x06STRING\x10\x08\x12\x08\n\x04\x42OOL\x10\t\x12\x0b\n\x07\x46LOAT16\x10\n\"h\n\x11SparseTensorProto\x12\x0c\n\x04\x64ims\x18\x01 \x03(\x03\x12\"\n\x07indices\x18\x02 \x01(\x0b\x32\x11.onnx.TensorProto\x12!\n\x06values\x18\x03 \x01(\x0b\x32\x11.onnx.TensorProto*\x19\n\x07Version\x12\x0e\n\nIR_VERSION\x10\x01')
+  serialized_pb=_b('\n\x11protos/onnx.proto\x12\x04onnx\"\xef\x01\n\x0e\x41ttributeProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\t\n\x01\x66\x18\x02 \x01(\x02\x12\t\n\x01i\x18\x03 \x01(\x03\x12\t\n\x01s\x18\x04 \x01(\x0c\x12\x1c\n\x01t\x18\x05 \x01(\x0b\x32\x11.onnx.TensorProto\x12\x1b\n\x01g\x18\x06 \x01(\x0b\x32\x10.onnx.GraphProto\x12\x0e\n\x06\x66loats\x18\x07 \x03(\x02\x12\x0c\n\x04ints\x18\x08 \x03(\x03\x12\x0f\n\x07strings\x18\t \x03(\x0c\x12\"\n\x07tensors\x18\n \x03(\x0b\x32\x11.onnx.TensorProto\x12 \n\x06graphs\x18\x0b \x03(\x0b\x32\x10.onnx.GraphProto\"\x86\x01\n\tNodeProto\x12\r\n\x05input\x18\x01 \x03(\t\x12\x0e\n\x06output\x18\x02 \x03(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x0f\n\x07op_type\x18\x04 \x01(\t\x12\'\n\tattribute\x18\x05 \x03(\x0b\x32\x14.onnx.AttributeProto\x12\x12\n\ndoc_string\x18\x06 \x01(\t\"\xad\x01\n\nModelProto\x12\x12\n\nir_version\x18\x01 \x01(\x03\x12\x15\n\rproducer_name\x18\x02 \x01(\t\x12\x18\n\x10producer_version\x18\x03 \x01(\t\x12\x0e\n\x06\x64omain\x18\x04 \x01(\t\x12\x15\n\rmodel_version\x18\x05 \x01(\x03\x12\x12\n\ndoc_string\x18\x06 \x01(\t\x12\x1f\n\x05graph\x18\x07 \x01(\x0b\x32\x10.onnx.GraphProto\"\x94\x01\n\nGraphProto\x12\x1d\n\x04node\x18\x01 \x03(\x0b\x32\x0f.onnx.NodeProto\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05input\x18\x03 \x03(\t\x12\x0e\n\x06output\x18\x04 \x03(\t\x12&\n\x0binitializer\x18\x05 \x03(\x0b\x32\x11.onnx.TensorProto\x12\x12\n\ndoc_string\x18\n \x01(\t\"\xa6\x03\n\x0bTensorProto\x12\x0c\n\x04\x64ims\x18\x01 \x03(\x03\x12-\n\tdata_type\x18\x02 \x01(\x0e\x32\x1a.onnx.TensorProto.DataType\x12*\n\x07segment\x18\x03 \x01(\x0b\x32\x19.onnx.TensorProto.Segment\x12\x16\n\nfloat_data\x18\x04 \x03(\x02\x42\x02\x10\x01\x12\x16\n\nint32_data\x18\x05 \x03(\x05\x42\x02\x10\x01\x12\x13\n\x0bstring_data\x18\x06 \x03(\x0c\x12\x16\n\nint64_data\x18\x07 \x03(\x03\x42\x02\x10\x01\x12\x0c\n\x04name\x18\x08 \x01(\t\x12\x10\n\x08raw_data\x18\t \x01(\x0c\x1a%\n\x07Segment\x12\r\n\x05\x62\x65gin\x18\x01 \x01(\x03\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x03\"\x89\x01\n\x08\x44\x61taType\x12\r\n\tUNDEFINED\x10\x00\x12\t\n\x05\x46LOAT\x10\x01\x12\t\n\x05UINT8\x10\x02\x12\x08\n\x04INT8\x10\x03\x12\n\n\x06UINT16\x10\x04\x12\t\n\x05INT16\x10\x05\x12\t\n\x05INT32\x10\x06\x12\t\n\x05INT64\x10\x07\x12\n\n\x06STRING\x10\x08\x12\x08\n\x04\x42OOL\x10\t\x12\x0b\n\x07\x46LOAT16\x10\n\"h\n\x11SparseTensorProto\x12\x0c\n\x04\x64ims\x18\x01 \x03(\x03\x12\"\n\x07indices\x18\x02 \x01(\x0b\x32\x11.onnx.TensorProto\x12!\n\x06values\x18\x03 \x01(\x0b\x32\x11.onnx.TensorProto*\x19\n\x07Version\x12\x0e\n\nIR_VERSION\x10\x01')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -37,8 +36,8 @@ _VERSION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1172,
-  serialized_end=1197,
+  serialized_start=1264,
+  serialized_end=1289,
 )
 _sym_db.RegisterEnumDescriptor(_VERSION)
 
@@ -99,8 +98,8 @@ _TENSORPROTO_DATATYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=927,
-  serialized_end=1064,
+  serialized_start=1019,
+  serialized_end=1156,
 )
 _sym_db.RegisterEnumDescriptor(_TENSORPROTO_DATATYPE)
 
@@ -122,7 +121,7 @@ _ATTRIBUTEPROTO = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='f', full_name='onnx.AttributeProto.f', index=1,
       number=2, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -197,7 +196,6 @@ _ATTRIBUTEPROTO = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -263,12 +261,83 @@ _NODEPROTO = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
   serialized_start=270,
   serialized_end=404,
+)
+
+
+_MODELPROTO = _descriptor.Descriptor(
+  name='ModelProto',
+  full_name='onnx.ModelProto',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ir_version', full_name='onnx.ModelProto.ir_version', index=0,
+      number=1, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='producer_name', full_name='onnx.ModelProto.producer_name', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='producer_version', full_name='onnx.ModelProto.producer_version', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='domain', full_name='onnx.ModelProto.domain', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='model_version', full_name='onnx.ModelProto.model_version', index=4,
+      number=5, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='doc_string', full_name='onnx.ModelProto.doc_string', index=5,
+      number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='graph', full_name='onnx.ModelProto.graph', index=6,
+      number=7, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=407,
+  serialized_end=580,
 )
 
 
@@ -315,35 +384,7 @@ _GRAPHPROTO = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='ir_version', full_name='onnx.GraphProto.ir_version', index=5,
-      number=6, type=3, cpp_type=2, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='producer_version', full_name='onnx.GraphProto.producer_version', index=6,
-      number=7, type=3, cpp_type=2, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='producer_tag', full_name='onnx.GraphProto.producer_tag', index=7,
-      number=8, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='domain', full_name='onnx.GraphProto.domain', index=8,
-      number=9, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='doc_string', full_name='onnx.GraphProto.doc_string', index=9,
+      name='doc_string', full_name='onnx.GraphProto.doc_string', index=5,
       number=10, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -357,12 +398,11 @@ _GRAPHPROTO = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=407,
-  serialized_end=639,
+  serialized_start=583,
+  serialized_end=731,
 )
 
 
@@ -395,12 +435,11 @@ _TENSORPROTO_SEGMENT = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=887,
-  serialized_end=924,
+  serialized_start=979,
+  serialized_end=1016,
 )
 
 _TENSORPROTO = _descriptor.Descriptor(
@@ -482,12 +521,11 @@ _TENSORPROTO = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=642,
-  serialized_end=1064,
+  serialized_start=734,
+  serialized_end=1156,
 )
 
 
@@ -527,12 +565,11 @@ _SPARSETENSORPROTO = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1066,
-  serialized_end=1170,
+  serialized_start=1158,
+  serialized_end=1262,
 )
 
 _ATTRIBUTEPROTO.fields_by_name['t'].message_type = _TENSORPROTO
@@ -540,6 +577,7 @@ _ATTRIBUTEPROTO.fields_by_name['g'].message_type = _GRAPHPROTO
 _ATTRIBUTEPROTO.fields_by_name['tensors'].message_type = _TENSORPROTO
 _ATTRIBUTEPROTO.fields_by_name['graphs'].message_type = _GRAPHPROTO
 _NODEPROTO.fields_by_name['attribute'].message_type = _ATTRIBUTEPROTO
+_MODELPROTO.fields_by_name['graph'].message_type = _GRAPHPROTO
 _GRAPHPROTO.fields_by_name['node'].message_type = _NODEPROTO
 _GRAPHPROTO.fields_by_name['initializer'].message_type = _TENSORPROTO
 _TENSORPROTO_SEGMENT.containing_type = _TENSORPROTO
@@ -550,6 +588,7 @@ _SPARSETENSORPROTO.fields_by_name['indices'].message_type = _TENSORPROTO
 _SPARSETENSORPROTO.fields_by_name['values'].message_type = _TENSORPROTO
 DESCRIPTOR.message_types_by_name['AttributeProto'] = _ATTRIBUTEPROTO
 DESCRIPTOR.message_types_by_name['NodeProto'] = _NODEPROTO
+DESCRIPTOR.message_types_by_name['ModelProto'] = _MODELPROTO
 DESCRIPTOR.message_types_by_name['GraphProto'] = _GRAPHPROTO
 DESCRIPTOR.message_types_by_name['TensorProto'] = _TENSORPROTO
 DESCRIPTOR.message_types_by_name['SparseTensorProto'] = _SPARSETENSORPROTO
@@ -568,6 +607,13 @@ NodeProto = _reflection.GeneratedProtocolMessageType('NodeProto', (_message.Mess
   # @@protoc_insertion_point(class_scope:onnx.NodeProto)
   ))
 _sym_db.RegisterMessage(NodeProto)
+
+ModelProto = _reflection.GeneratedProtocolMessageType('ModelProto', (_message.Message,), dict(
+  DESCRIPTOR = _MODELPROTO,
+  __module__ = 'protos.onnx_pb2'
+  # @@protoc_insertion_point(class_scope:onnx.ModelProto)
+  ))
+_sym_db.RegisterMessage(ModelProto)
 
 GraphProto = _reflection.GeneratedProtocolMessageType('GraphProto', (_message.Message,), dict(
   DESCRIPTOR = _GRAPHPROTO,

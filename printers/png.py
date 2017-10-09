@@ -22,16 +22,15 @@ def choose_style_by_layertype(layertype, theme):
     except:
         layer_style = theme['layer_default']
 
-    layer_style['fontcolor'] = 'black'
     return layer_style
 
 
 class PngPrinter(object):
     """The printer prints to PNG files"""
 
-    def __init__(self, outfile, png_prefs, net):
-        self.output_image_file = outfile + '.png'
-        self.output_inventory_file = outfile + '_inventory.png'
+    def __init__(self, args, png_prefs, net):
+        self.output_image_file = args.infile + '.png'
+        self.output_inventory_file = args.infile + '_inventory.png'
         self.caffe_net = net
         self.pydot_nodes = {}
         self.pydot_edges = []
@@ -56,7 +55,6 @@ class PngPrinter(object):
             'Concat': PngPrinter.print_concat,
             'Convolution_ReLU': PngPrinter.print_mergednode,
             'Convolution_ReLU_Pooling': PngPrinter.print_mergednode,
-            'Tensor': PngPrinter.print_tensor,
         }
 
         printer = layers.get(node.type, PngPrinter.print_default)
@@ -66,12 +64,6 @@ class PngPrinter(object):
     @staticmethod
     def print_default(node, separator, format):
         node_label = '%s%s(%s)' % (node.name, separator, node.type)
-        return node_label
-
-    @staticmethod
-    def print_tensor(node, separator, format):
-        node_label = '%s%s(%s)' % (node.name, separator, node.type)
-        node_label += separator + str(node.shape) if node.shape is not None else 'None'
         return node_label
 
     @staticmethod
@@ -181,59 +173,52 @@ class PngPrinter(object):
             separator = '\\n'
 
         node_label = self.get_node_label(node, separator, self.__prefs['node_label'])
-
-        # Display Tensor views using a different font or shape
-        layer_style['shape'] = 'none'
-        if hasattr(node, 'parent') and node.parent is not None:
-            node_label += separator + 'parent= ' + node.parent.name
-            layer_style['fontcolor'] = 'grey'
-            #layer_style['shape'] = 'point'
+        #print('[png_printer] adding node: ', node.name)
         self.pydot_nodes[node.name] = pydot.Node(node_label, **layer_style)
 
     def add_pydot_edge(self, edge, tplgy):
-        # print("adding edge:", edge)
-        if (edge.src is None) or (edge.dst is None):
+        if (edge.src_node is None) or (edge.dst_node is None):
             return
 
-        if False: # self.__prefs['label_edges'] and edge.blob != None:
-            edge_label = str(edge.blob.shape)
-            # Add parent BLOB name
-            if edge.blob.parent is not None:
-                edge_label += '\n(' + edge.blob.parent.name + ')'
+        if self.__prefs['label_edges'] and edge.blob != None:
+            edge_label = str(edge.blob.shape) #get_edge_label(edge.src_node)
         else:
             edge_label = '""'
 
-        src_name = edge.src.name
-        memory = '' #edge.blob.memory if hasattr(edge.blob, 'memory') else ''
-
+        src_name = edge.src_node.name
         self.pydot_edges.append({'src': src_name,
-                                 'dst': edge.dst.name,
-                                 'label': edge_label,
-                                 'memory': memory})
+                                'dst': edge.dst_node.name,
+                                'label': edge_label})
 
-    def draw_subgraphs(self, tplgy, pydot_graph):
-        nodes = []
-        tplgy.traverse(lambda node: nodes.append(node))
+    def draw_clusters(self, pydot_graph):
         clusters = {}
-        for node in nodes:
-            pydot_node = self.pydot_nodes[node.name]
-
-            if not hasattr(node, 'subgraph'):
-                pydot_graph.add_node(pydot_node)
-                continue
-
-            cluster_name = str(node.subgraph)
-            if cluster_name in clusters:
-                cluster = clusters[cluster_name]
+        for node_name, pydot_node in self.pydot_nodes.items():
+            separator = self.__prefs['cluster_name_separator']
+            if node_name.find(separator) > 0:
+                cluster_name = node_name[0:node_name.find(separator)]
             else:
-                # New subgraph
-                cluster = pydot.Cluster(cluster_name, label=cluster_name, style="filled")
-                clusters[cluster_name] = cluster
-            cluster.add_node(pydot_node)
+                cluster_name = node_name
+            # Dot doesn't handle well clusters with names that contain '-'
+            cluster_name = cluster_name.replace('-', '_')
 
-        for _,cluster in clusters.items():
-            pydot_graph.add_subgraph(cluster)
-        pydot_graph.write_raw('debug.dot')
+            is_new_cluster = True
+            for name, cluster in clusters.items():
+                if name == cluster_name:
+                    is_new_cluster = False
+                    cluster.add_node(pydot_node)
+                    break
+            if is_new_cluster:
+                cluster = pydot.Cluster(cluster_name, label=cluster_name)
+                clusters[cluster_name] = cluster
+                # print("creating cluster: ", cluster_name)
+                cluster.add_node(pydot_node)
+
+        for cluster in clusters.values():
+            # for clusters of size 1, we don't want to draw a cluster box
+            if len(cluster.get_nodes()) == 1:
+                pydot_graph.add_node(cluster.get_nodes()[0])
+            else:
+                pydot_graph.add_subgraph(cluster)
 
     def draw_net(self, caffe_net, rankdir, tplgy):
         pydot_graph = pydot.Dot(self.caffe_net.name if self.caffe_net.name else 'Net',
@@ -241,23 +226,27 @@ class PngPrinter(object):
                                 compound='true',
                                 rankdir=rankdir)
 
+        # tplgy.dump_edges()
         tplgy.traverse(lambda node: self.add_pydot_node(node, tplgy, rankdir),
                        lambda edge: self.add_pydot_edge(edge, tplgy))
-        self.draw_subgraphs(tplgy, pydot_graph)
+
+        # Cluster nodes by name prefix
+        # add the nodes and edges to the graph.
+        if self.__prefs['draw_clusters']:
+            self.draw_clusters(pydot_graph)
+        else:   # not clustering
+            for pydot_node in iter(self.pydot_nodes.values()):
+                pydot_graph.add_node(pydot_node)
 
         for edge in self.pydot_edges:
             if edge['dst'] not in self.pydot_nodes:
                 print('Fatal error: node \'%s\' of edge %s is not in the pydot_node list!' % (edge['dst'], edge))
                 #exit()
                 break
-
-            style = 'dashed' if edge['memory']=='scratchpad' else ''
-
             pydot_graph.add_edge(
                 pydot.Edge(self.pydot_nodes[edge['src']],
                            self.pydot_nodes[edge['dst']],
-                           label=edge['label'],
-                           style = style))
+                           label=edge['label']))
 
         print("Number of nodes:", len(self.pydot_nodes))
         if self.__prefs['gen_dot_file']:

@@ -13,6 +13,7 @@ proto_files = [
     "https://raw.githubusercontent.com/caffe2/caffe2/master/caffe2/proto/caffe2.proto",
     "https://raw.githubusercontent.com/onnx/onnx/master/onnx/onnx.proto" ]
 
+
 def download_and_install_protoc():
     """ This downloads and install's Google's protobuf compiler.
 
@@ -45,18 +46,21 @@ def download_and_install_protoc():
     os.remove(protoc_version)
     return 'protoc/bin/protoc'
 
-def download_and_compile_protos(proto_files, protoc):
+
+def download_and_compile_protos(proto_files, protoc, download=True):
     """ Compile the protobuf files """
     os.makedirs('protos', exist_ok=True)
     for link in proto_files:
         proto_content = requests.get(link)
         proto_file = 'protos/' + os.path.basename(link)
-        print('\nDownloading ', proto_file)
-        f = open(proto_file, 'w')
-        f.write(proto_content.text)
-        f.close()
+        if download:
+            print('\nDownloading ', proto_file)
+            f = open(proto_file, 'w')
+            f.write(proto_content.text)
+            f.close()
         print("Compiling ", proto_file)
         call([protoc, '-I=.', '--python_out=.', proto_file])
+
 
 def main():
     if False:
@@ -64,7 +68,7 @@ def main():
         protoc = download_and_install_protoc()
     else:
         protoc = 'protoc'
-    download_and_compile_protos(proto_files, protoc)
+    download_and_compile_protos(proto_files, protoc, download=False)
 
 if __name__ == '__main__':
     main()

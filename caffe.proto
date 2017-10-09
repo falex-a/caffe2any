@@ -389,6 +389,8 @@ message LayerParameter {
   optional InputParameter input_param = 143;
   optional BatchNormParameter batch_norm_param = 144;
   optional ScaleParameter scale_param = 145;
+  optional Normalization_Param normalization_param = 147;
+  optional Dense_Image_Data_Param dense_image_data_param = 148;
 }
 
 // Message that stores parameters used to apply transformation

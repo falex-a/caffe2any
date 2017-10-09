@@ -4,7 +4,6 @@ For example, the Inventory transformer, reduces the graph
 to a nodes type histogram.
 """
 from collections import Counter
-import topology
 
 def __is_unique(node, unique_list):
     unique = True
@@ -16,9 +15,8 @@ def __is_unique(node, unique_list):
             break
     return unique
 
+
 def __add_unique(node, unique_layers):
-    if not issubclass(type(node), topology.Op):
-        return
     if unique_layers.get(node.type)==None:
         unique_layers[node.type] = []
     if __is_unique(node, unique_layers[node.type]):
@@ -35,11 +33,6 @@ def get_uniques_inventory(tplgy):
     tplgy.traverse(lambda node: __add_unique(node, unique_nodes))
     return unique_nodes
 
-def __add_to_inventory(node, node_cnt):
-    if not issubclass(type(node), topology.Op):
-        return
-    node_cnt.append(node.type)
-
 def get_inventory(tplgy):
     ''' This transform creates a dictionary:
     inventory[node_type] <== #instances
@@ -47,5 +40,5 @@ def get_inventory(tplgy):
     of each node type in the graph.
     '''
     node_cnt = []
-    tplgy.traverse(lambda node: __add_to_inventory(node, node_cnt))
+    tplgy.traverse(lambda node: node_cnt.append(node.type))
     return Counter(node_cnt)

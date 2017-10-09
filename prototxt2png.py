@@ -93,12 +93,13 @@ def get_layer_label(layer, rankdir):
     if layer.type == 'Convolution' or layer.type == 'Deconvolution':
         # Outer double quotes needed or else colon characters don't parse
         # properly
-        node_label = '"%s%s(%s)%skernel size: %d%sstride: %d%spad: %d"' %\
+        node_label = '"%s%s(%s)%skernel size: [%dx%d]%sstride: %d%spad: %d"' %\
                      (layer.name,
                       separator,
                       layer.type,
                       separator,
-                      layer.convolution_param.kernel_size,
+                      layer.convolution_param.kernel_w if layer.convolution_param.kernel_w else layer.convolution_param.kernel_size,
+                      layer.convolution_param.kernel_h if layer.convolution_param.kernel_h else layer.convolution_param.kernel_size,
                       separator,
                       layer.convolution_param.stride,
                       separator,

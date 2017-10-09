@@ -9,20 +9,27 @@ from collections import OrderedDict, deque
 import math
 import copy
 import logging
-import sys, traceback
-logger = None
+
+tlogger = logging.getLogger(__name__)
+fh = logging.FileHandler("output/log")
+tlogger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+# add handler to logger object
+tlogger.addHandler(fh)
+
+#tlogger.debug("boo")
+
 
 def log():
-    global logger
-    if logger == None:
-        logger = logging.getLogger(__name__)
-    #print(__name__, logger)
-    return logger
+    return tlogger
 
-class Op:
-    def __init__(self, name, type):
+
+class Node:
+    def __init__(self, name, type, role):
         self.name = name
         self.type = type
+        self.role = role
         self.attributes = {}
 
     def __str__(self):
@@ -48,9 +55,9 @@ class Op:
     def set_attr(self, name, val):
         self.attributes[name] = val
 
-class PoolingNode(Op):
+class PoolingNode(Node):
     def __init__(self, name, type, layer):
-        Op.__init__(self, name, type)
+        Node.__init__(self, name, type, 'Producer')
         param = layer.pooling_param
         self.kernel_size = param.kernel_size
         self.stride = param.stride
@@ -71,7 +78,7 @@ class PoolingNode(Op):
         ofmh = math.ceil((ifmh - self.kernel_size + 2.0 * self.pad) / self.stride) + 1
         ofmh_noceil = (ifmh - self.kernel_size + 2.0 * self.pad) / self.stride + 1
         # The OFM is square, but I calculate the edges with different rounding strategies.
-        # If the edges have different values, then we need to use the "ceiling"/"same" method
+        # If the edges have diffe, 'Deconvolution'rent values, then we need to use the "ceiling"/"same" method
         self.ceiling = (ofmh_noceil != ofmh)
         ofm_shape[2] = int(ofmh)
         ofm_shape[3] = int(ofmw)
@@ -79,14 +86,17 @@ class PoolingNode(Op):
         return ofm_shape
 
 
-class ConvolutionNode(Op):
+class ConvolutionNode(Node):
     def __init__(self, name, type, layer):
-        Op.__init__(self, name, type)
+        Node.__init__(self, name, type, 'Producer')
         param = layer.convolution_param
         self.kernel_size = param.kernel_size
         self.stride = param.stride
         self.pad = param.pad
         self.num_output = param.num_output
+        self.dilation = param.dilation if param.dilation else 1
+        self.kernel_h = param.kernel_h if param.kernel_h else param.kernel_size
+        self.kernel_w = param.kernel_w if param.kernel_w else param.kernel_size
 
     def is_same(self, other):
         if not isinstance(other, self.__class__):
@@ -98,43 +108,40 @@ class ConvolutionNode(Op):
         ofm_shape[1] = self.num_output
         ifmh = ifm_shape[2]
         ifmw = ifm_shape[3]
-        ofmh = (ifmh - self.kernel_size + 2.0 * self.pad) / self.stride + 1
-        ofmw = (ifmw - self.kernel_size + 2.0 * self.pad) / self.stride + 1
+        ofmh = (ifmh - self.kernel_h + 2.0 * self.pad/self.dilation ) / self.stride + 1
+        ofmw = (ifmw -  self.kernel_w + 2.0 * self.pad/self.dilation ) / self.stride + 1
         ofm_shape[2] = int(ofmh)
         ofm_shape[3] = int(ofmw)
         log().debug(str(ifm_shape) + '--> ' + str(ofm_shape))
         return ofm_shape
 
-    def get_MACs(self, ofms_shape, num_ifms):
+    def get_MACs(self, ofms_descriptor, num_ifms):
         # macs = #OFMs*OFM_X*OFM_Y*#IFMs*K_X*K_Y
-        num_ofms = ofms_shape[1]
-        ofm_x = ofms_shape[2]
-        ofm_y = ofms_shape[3]
-        MACs = num_ofms * ofm_x * ofm_y * num_ifms * self.kernel_size * self.kernel_size
+        num_ofms = ofms_descriptor[1] if ofms_descriptor else 0
+        ofm_x = ofms_descriptor[2] if ofms_descriptor else 0
+        ofm_y = ofms_descriptor[3] if ofms_descriptor else 0
+        MACs = num_ofms * ofm_x * ofm_y * num_ifms * self.kernel_w * self.kernel_h
         return MACs
 
 
-class PairNode(Op):
-    ''' Container of two Operations '''
+class PairNode(Node):
     def __init__(self, node1, node2):
         self.node1 = node1
         self.node2 = node2
         name = node1.name + "  ++  " + node2.name
         type = node1.type + '_' + node2.type
         #type = new_type if new_type is not None else node1.type + '_' + node2.type
-        Op.__init__(self, name, type)
-
-    def transform_ifm(self, ifm_shape):
-        return self.node1.transform_ifm(ifm_shape)
+        Node.__init__(self, name, type, node1.role)
 
     def is_same(self, other):
         return self.node1.is_same(other.node1) and self.node2.is_same(other.node2)
 
-class DeconvolutionNode(Op):
+
+class DeconvolutionNode(Node):
     def __init__(self, name, type, layer):
-        Op.__init__(self, name, type)
+        Node.__init__(self, name, type, 'Producer')
         param = layer.convolution_param
-        self.kernel_size = param.kernel_size
+        self.kernel_w = self.kernel_h = self.kernel_size = param.kernel_size
         self.stride = param.stride
         self.pad = param.pad
         self.num_output = param.num_output
@@ -157,10 +164,17 @@ class DeconvolutionNode(Op):
         log().debug(str(ifm_shape) + '--> ' + str(ofm_shape))
         return ofm_shape
 
+    def get_MACs(self, ifms_descriptor, num_ofms):
+        # macs = #IFMs*IFM_X*IFM_Y*#OFMs*K_X*K_Y
+        num_ifms = ifms_descriptor[1] if ifms_descriptor else 0
+        ifm_x = ifms_descriptor[2] if ifms_descriptor else 0
+        ifm_y = ifms_descriptor[3] if ifms_descriptor else 0
+        MACs = num_ifms * ifm_x * ifm_y * num_ofms * self.kernel_w * self.kernel_h
+        return MACs
 
-class InnerProductNode(Op):
+class InnerProductNode(Node):
     def __init__(self, name, type, layer):
-        Op.__init__(self, name, type)
+        Node.__init__(self, name, type, 'Producer')
         self.num_output = layer.inner_product_param.num_output
 
     def transform_ifm(self, ifm_shape):
@@ -171,9 +185,9 @@ class InnerProductNode(Op):
         return ofm_shape
 
 
-class LRNNode(Op):
+class LRNNode(Node):
     def __init__(self, name, type, layer):
-        Op.__init__(self, name, type)
+        Node.__init__(self, name, type, 'Producer')
         param = layer.lrn_param
         self.norm_region = layer.lrn_param.norm_region
         self.local_size = layer.lrn_param.local_size
@@ -186,9 +200,9 @@ class LRNNode(Op):
         return (self.norm_region, self.alpha, self.beta, self.local_size) == (
         other.norm_region, other.alpha, other.beta, other.local_size)
 
-class ReshapeNode(Op):
+class ReshapeNode(Node):
     def __init__(self, name, type, layer):
-        Op.__init__(self, name, type)
+        Node.__init__(self, name, type, 'Modifier')
         param = layer.reshape_param
         self.reshape_param = param.shape
 
@@ -219,16 +233,20 @@ class ReshapeNode(Op):
                 ofm_shape[infer] = ifm_size
         return ofm_shape
 
-class EltwiseNode(Op):
+class EltwiseNode(Node):
     def __init__(self, name, type, layer):
-        Op.__init__(self, name, type)
+        Node.__init__(self, name, type, 'Producer')
         self.operation = layer.eltwise_param.operation
 
-class ConcatNode(Op):
+class ConcatNode(Node):
     def __init__(self, name, type, layer):
-        Op.__init__(self, name, type)
+        Node.__init__(self, name, type, 'Modifier')
 
-def op_factory(name, type, layer):
+    #def transform_ifm(self, ifm_shape):
+    #    ofm_shape = copy.deepcopy(ifm_shape)
+    #    return ofm_shape
+
+def node_factory(name, type, layer, role):
     if type == "Pooling":
         new_node = PoolingNode(name, type, layer)
     elif type == "Convolution":
@@ -246,7 +264,7 @@ def op_factory(name, type, layer):
     elif type == "Concat":
         new_node = ConcatNode(name, type, layer)
     else:
-        new_node = Op(name, type)
+        new_node = Node(name, type, role)
     return new_node
 
 
@@ -254,15 +272,7 @@ class BLOB:
     def __init__(self, name, shape, producer):
         self.name = name
         self.shape = shape
-        ''' A BLOB's parent is the physical (storage) BLOB to which this BLOB is mapped.
-        Another way to look at it: if a BLOB has a parent, then the BLOB is only a view
-        into the parent's storage (and therfore the BLOB and its parent share the same
-        physical storage).
-        See Torch Tensor view documentation:
-        http://jucor.github.io/torch-doc-template/tensor.html#toc_28
-        '''
-        self.parent = None
-        self.type = 'Tensor'
+        self.producer = producer
 
     def __str__(self):
         if self.shape != None:
@@ -275,55 +285,27 @@ class BLOB:
             return NotImplemented
         return self.name == other.name
 
-    @staticmethod
-    def sizeof(shape):
-        if shape is None:
+    def size(self):
+        if self.shape is None:
             return 0
         # shape[0] is the batch dimension, so don't count it
-        return shape[1] * shape[2] * shape[3]
+        return self.shape[1] * self.shape[2] * self.shape[3]
 
-    def size(self):
-        return self.sizeof(self.shape)
 
 class Edge:
-    '''    def __init__(self, src_node, dst_node, blob):
+    def __init__(self, src_node, dst_node, blob):
         self.src_node = src_node
         self.dst_node = dst_node
         self.blob = blob
         self.is_deleted = False
-    '''
-    def __init__(self, src, dst):
-        self.src = src
-        self.dst = dst
-        self.is_deleted = False
-
-    @staticmethod
-    def __print_vertex(vertex):
-        if vertex is None:
-            return 'None'
-        if type(vertex) == BLOB:
-            return '[' + vertex.name + ']'
-        return vertex.name
 
     def __str__(self):
-        desc = self.__print_vertex(self.src) + ' ==> ' + self.__print_vertex(self.dst)
+        desc = ((self.src_node.name if self.src_node else 'None') + ' ==> ' +
+                str(self.blob) + ' ==> ' +
+                (self.dst_node.name if self.dst_node else 'None'))
         if self.is_deleted:
             desc += " IS DELETED!!"
         return desc
-
-class SubGraph:
-    ''' A sub-graph is a specific view of the graph.
-    (loosely following: https://www.tensorflow.org/versions/r0.12/api_docs/python/contrib.graph_editor/module_subgraph)
-    It has incoming edges, outgoing edges, and a set of nodes.
-    '''
-    def __init__(self, nodes=None, in_edges=None, out_edges=None, id=None):
-        self.nodes = nodes
-        self.in_edges = in_edges
-        self.out_edges = out_edges
-        for node in nodes:
-            node.subgraph = id
-        #self.id = id
-        self.name = str(id)
 
 class Topology:
     def __init__(self):
@@ -331,10 +313,11 @@ class Topology:
         Keep the the vertices ordered by insertion, so that we have
         a starting point
         """
-        self.__ops = OrderedDict()
+        self.__nodes = OrderedDict()
         self.__blobs = {}
         self.__edges = []
         self.__first_node = None
+        tlogger.debug("created Topology object")
 
     def dump_edges(self):
         print('Dumping edges')
@@ -342,120 +325,74 @@ class Topology:
         for edge in self.__edges:
             print(str(edge))
 
-    def dump_blobs(self):
-        print('Dumping blobs')
-        print('-----------------------------------------')
-        for name, blob in self.__blobs.items():
-            print(name + ': ' + str(blob))
-
-    def add_op2(self, new_op):
-        assert issubclass(type(new_op), Op)
-        self.__ops[new_op.name] = new_op
+    def add_node(self, name, type, layer, role):
+        new_node = node_factory(name, type, layer, role)
+        self.__nodes[name] = new_node
         if self.__first_node is None:
-            self.__first_node = new_op
-        log().debug('created Op:' + new_op.name)
-        return new_op
+            self.__first_node = new_node
+        log().debug('created Node:' + name)
+        return new_node
 
-    def add_op(self, name, type, layer):
-        new_op = op_factory(name, type, layer)
-        return self.add_op2(new_op)
-
-    def add_ops(self, ops_to_add):
-        for op in ops_to_add:
-            assert issubclass(type(op), Op)
-            self.__ops[op.name] = op
+    def add_nodes(self, nodes_to_add):
+        for node in nodes_to_add:
+            self.__nodes[node.name] = node
             if self.__first_node is None:
-                self.__first_node = op
-            log().debug('created Op:' + op.name)
+                self.__first_node = node
+            log().debug('created Node:' + node.name)
 
     def del_nodes(self, nodes_to_del):
         for node in nodes_to_del:
-            if type(node) == BLOB:
-                del self.__blobs[node.name]
-            else:
-                self.__del_op(node)
+            self.del_node(node)
 
-    def __del_op(self, op):
-        assert issubclass(type(op), Op)
+    def del_node(self, node):
         # remove all edges which enter/exit this node
-        incoming_edges = self.find_incoming_edges(op)
-        outgoing_edges = self.find_outgoing_edges(op)
+        incoming_edges = self.find_incoming_edges(node)
+        outgoing_edges = self.find_outgoing_edges(node)
         for edge in incoming_edges:
             self.del_edge(edge)
         for edge in outgoing_edges:
             self.del_edge(edge)
         # Fix the first_node pointer
-        if self.__first_node == op:
+        if self.__first_node == node:
             self.__first_node = None
         # Finally, delete the node and change its name (for debug)
-        del self.__ops[op.name]
-        op.name = op.name + "[DELETED]"
+        del self.__nodes[node.name]
+        node.name = node.name + "[DELETED]"
 
-    def remove_ops(self, ops):
-        [self.remove_op(op) for op in ops]
+    def remove_nodes(self, nodes):
+        [self.remove_node(node) for node in nodes]
 
-    # The difference between del_op and remove_op?
+    # The difference between del_node and remove_node?
     # remove_node will del_node and also reconnect the edge around
     # the node that was removed
-    def remove_op(self, op):
-        '''
-        +--------+     +++++++++++     +----+     +++++++++++     +-------+
-        | pre_op |---->| pre_data|---->| op |---->|post_data|---->|post_op|
-        +--------+     +++++++++++     +----+     +++++++++++     +-------+
-
-        +--------+     +++++++++++                                +-------+
-        | pre_op |---->| pre_data|------------------------------->|post_op|
-        +--------+     +++++++++++                                +-------+
-        '''
-        assert issubclass(type(op), Op)
-        incoming_edges = self.find_incoming_edges(op)
-        outgoing_edges = self.find_outgoing_edges(op)
+    def remove_node(self, node):
+        incoming_edges = self.find_incoming_edges(node)
+        outgoing_edges = self.find_outgoing_edges(node)
         for incoming_edge in incoming_edges:
-            pre_data = incoming_edge.src
+            src = incoming_edge.src_node
             for outgoing_edge in outgoing_edges:
-                post_data_2_post_op_edges = self.find_outgoing_edges(outgoing_edge.dst)
-                for post_data_2_post_op_edge in post_data_2_post_op_edges:
-                    new_edge = self.add_edge(pre_data, post_data_2_post_op_edge.dst)
-                    #print("adding edge", new_edge)
-                    self.del_edge(post_data_2_post_op_edge)
+                self.add_edge(src, outgoing_edge.dst_node, incoming_edge.blob)
+        self.del_node(node)
 
-                # Delete post_data
-                #self.del_nodes([outgoing_edge.dst])
-                # Delete edge
-                self.del_edge(outgoing_edge)
-        self.__del_op(op)
-
-    def remove_op_by_type(self, type_to_remove):
+    def remove_node_by_type(self, type_to_remove):
         done = False
         while not done:
             done = True
-            for op_name in list(self.__ops.keys()):
-                op = self.__ops[op_name]
-                if op.type != type_to_remove:
+            for node_name in list(self.__nodes.keys()):
+                node = self.__nodes[node_name]
+                if node.type != type_to_remove:
                     continue
-                self.remove_op(op)
+                self.remove_node(node)
                 done = False
 
     def add_blob(self, name, shape, producer):
         new_blob = BLOB(name, shape, producer)
-        assert name not in self.__blobs, 'BLOB ' + name + ' already exists'
         self.__blobs[name] = new_blob
         log().debug('created:' + str(new_blob))
-        if self.__first_node is None:
-            self.__first_node = new_blob
         return new_blob
 
-    def add_blob2(self, new_blob):
-        assert type(new_blob)==BLOB
-        assert new_blob.name not in self.__blobs, "{} already a BLOB".format(new_blob.name)
-        self.__blobs[new_blob.name] = new_blob
-        log().debug('created:' + str(new_blob))
-        if self.__first_node is None:
-            self.__first_node = new_blob
-        return new_blob
-
-    def add_edge(self, src, dst):
-        new_edge = Edge(src, dst)
+    def add_edge(self, src, dst, blob):
+        new_edge = Edge(src, dst, blob)
         self.__edges.append(new_edge)
         log().debug('created edge:' + str(new_edge))
         return new_edge
@@ -468,7 +405,7 @@ class Topology:
                 return
 
     def get_start_node(self):
-        log().debug("Start node: " + str(self.__first_node))
+        #return self.__nodes.values()[0]
         return self.__first_node
 
     def find_blob_by_name(self, name):
@@ -476,32 +413,17 @@ class Topology:
             return None
         return self.__blobs[name]
 
-    def find_op_by_name(self, name):
-        return self.__ops[name]
-
-    def find_edge(self, src, dst):
-        for edge in self.__edges:
-            if edge.src==src and edge.dst==dst:
-                return edge
-        return None
-
     def find_outgoing_edges(self, node):
         edges = []
         for edge in self.__edges:
-            if ((edge.is_deleted is False) and
-               (edge.src != None) and
-               (edge.src.name == node.name) and
-               type(edge.src) == type(node)):
+            if (edge.is_deleted is False) and (edge.src_node != None) and (edge.src_node.name == node.name):
                 edges.append(edge)
         return edges
 
     def find_incoming_edges(self, node):
         edges = []
         for edge in self.__edges:
-            if ((edge.is_deleted is False) and
-                (edge.dst != None) and
-                (edge.dst.name == node.name) and
-                type(edge.dst) == type(node)):
+            if (edge.is_deleted is False) and (edge.dst_node != None) and (edge.dst_node.name == node.name):
                 edges.append(edge)
         return edges
 
@@ -520,60 +442,53 @@ class Topology:
                 blobs.append(blob)
         return blobs
 
-    def find_type_pattern(self, node1_type, node2_type, node3_type):
-        ''' This is a very specific pattern matcher which looks for nodes
-        having the pattern [type1] ==> [type2] ==> [type3]
-        '''
-        #list(self.__nodes.keys())
-        found = []
-        nodes1 = [op for op in list(self.__ops.values()) if op.type == node1_type]
-        for node1 in nodes1:
-            nodes2 = [edge.dst for edge in self.find_outgoing_edges(node1) if edge.dst.type == node2_type]
-            for node2 in nodes2:
-                nodes3 = [edge.dst for edge in self.find_outgoing_edges(node2) if edge.dst.type == node3_type]
-                for node3 in nodes3:
-                    #print(node1, node2, node3)
-                    found.append((node1, node2, node3))
-        return found
+    def find_subgraph_pair(self, node1_type, node2_type):
+        pairs = []
+        for node_name in self.__nodes:
+            # Search for a matching pair of nodes, by node types
+            node1 = self.__nodes[node_name]
+            if node1.type != node1_type:
+                continue
+            outgoing_edges = self.find_outgoing_edges(node1)
+            assert len(outgoing_edges) == 1
+            out_edge = outgoing_edges[0]
+            if out_edge.dst_node is None or out_edge.dst_node.type != node2_type:
+                continue
 
-    def merge_ops(self, op1_type, op2_type):
-        ''' Merge two Ops together
+            # Found a match
+            node2 = out_edge.dst_node
+            pairs.append([node1, node2])
+        return pairs
+
+    def merge_nodes(self, node1_type, node2_type):
+        ''' Merge two nodes together
         '''
-        log().debug('[merge_ops] looking for nodes: {} ==> Tensor ==> {}'.format(op1_type, op2_type))
-        found = self.find_type_pattern(op1_type, 'Tensor', op2_type)
-        for (node1, node2, node3) in found:
-            new_node = PairNode(copy.deepcopy(node1), copy.deepcopy(node3))
-            node3_outgoing_edges = self.find_outgoing_edges(node3)
+        pairs = self.find_subgraph_pair(node1_type, node2_type)
+        for (node1, node2) in pairs:
+            new_node = PairNode(copy.deepcopy(node1), copy.deepcopy(node2))
+            node2_outgoing_edges = self.find_outgoing_edges(node2)
+            for node2_out_edge in node2_outgoing_edges:
+                self.add_edge(new_node, node2_out_edge.dst_node, copy.deepcopy(node2_out_edge.blob))
+
             node1_incoming_edges = self.find_incoming_edges(node1)
             for node1_incoming_edge in node1_incoming_edges:
-                self.add_edge(node1_incoming_edge.src, new_node)
-            for node3_out_edge in node3_outgoing_edges:
-                self.add_edge(new_node, node3_out_edge.dst)
+                self.add_edge(node1_incoming_edge.src_node, new_node, copy.deepcopy(node1_incoming_edge.blob))
+            log().debug("[merge_nodes] deleting nodes %s, %s" % (node1.name,node2.name))
+            self.del_nodes([node1, node2])
+            self.add_nodes([new_node])
+        return
 
-            assert node2.name in self.__blobs,  node2.name + ' not found'
-
-            log().debug('[merge_ops] deleting nodes: {}, {}, {}'.format(node1, node2, node3))
-            self.del_nodes([node1, node2, node3])
-            self.add_ops([new_node])
-        if len(found)==0:
-            log().debug('[merge_ops] didn`t find candidates for types {}, {}'.format(op1_type, op2_type))
-            #print('[merge_ops] didn`t find candidates for types {}, {}'.format(op1_type, op2_type))
-
-    '''
     def traverse_blobs(self, blob_cb):
         done = []
         for blob in self.__blobs:
             if blob in done:
                 continue
             blob_cb(self.__blobs[blob])
-    '''
 
     def traverse(self, node_cb, edge_cb=None):
-        ''' BFS (with modifications) traversal of the topology graph.
-        Essentially this is a topological sort with callbacks.
-        For each node (Operation or BLOB) the node_cb is invoked, if it is not None.
-        For each Edge, the edge_cb is invoked, if it is not None.
-        '''
+        """
+        BFS (with modifications) traversal of the topology graph
+        """
         pending = deque([self.get_start_node()])    # The list of nodes waiting to be processed
         done = []                                   # The list of nodes we've already processed
         log().debug('BFS: Starting traversal with node %s' % self.get_start_node())
@@ -582,19 +497,19 @@ class Topology:
 
             # This is a modification of BFS: we mandate that all incoming edges
             # have been processed before processing the node to ensure processing order satisfies data dependency
+            log().debug('BFS: processing node: %s' %node.name)
             incoming_edges = self.find_incoming_edges(node)
-            log().debug('BFS: processing node: {} ({})'.format(node.name, len(incoming_edges)))
             all_in_edges_were_processed = True
             for edge in incoming_edges:
-                if edge.src and (edge.src not in done): #and (type(edge.src) != BLOB):
+                if edge.src_node and edge.src_node not in done:
                     all_in_edges_were_processed = False
-                    log().debug("BFS: %s is waiting for %s" % (node.name, edge.src.name))
+                    log().debug("BFS: %s is waiting for %s" % (node.name, edge.src_node.name))
             if all_in_edges_were_processed is False:
                 continue
 
             done.append(node)
-            log().debug("BFS: done with %s" % node.name)
-            if node_cb is not None:# and type(node) != BLOB:
+            log().debug("BFS: done with %s, total done %d, total pending %d" % (node.name, len(done), len(pending)) )
+            if node_cb is not None:
                 # TODO: this can probably be removed after adding the data-dependency constraint
                 # Node callback can indicate failure, in which case we try again later
                 cb_handled = node_cb(node)
@@ -616,11 +531,9 @@ class Topology:
             # outgoing_edges = self.find_outgoing_edges(node)
             outgoing_edges = self.find_outgoing_edges(node)
             for edge in outgoing_edges:
-                if (edge.dst is not None) and (edge.dst not in done) and edge.dst not in pending:
-                    pending.append(edge.dst)
-                    log().debug('BFS: adding node: %s' % edge.dst.name)
-                elif edge.dst is not None:
-                    log().debug('BFS: ignoring  node: %s' % edge.dst.name)
+                if (edge.dst_node is not None) and (edge.dst_node not in done) and edge.dst_node not in pending:
+                    pending.append(edge.dst_node)
+                    log().debug('BFS: adding node: %s' % edge.dst_node.name)
+                elif edge.dst_node is not None:
+                    log().debug('BFS: ignoring  node: %s' % edge.dst_node.name)
         log().debug("BFS: traversal completed")
-        #for line in traceback.format_stack():
-        #    print(line.strip())
