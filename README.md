@@ -1,5 +1,13 @@
 # caffe2any: analyze Caffe prototxt files
 
+### AF:  operation tl;dr
+# caffe --> csv
+python3 caffe2any.py examples/enet_train_encoder_decoder.prototxt -p csv -d mem,unique,inventory,output,bfs
+# update parser from proto you edited in parsers/protos
+cd parsers && python3 update_protobufs.py && cp protos/caffe_pb2.py .. && cd ..
+
+#### ORIGINAL OVERVIEW ####
+
 This project contains a few utilities to analyze Caffe prototxt files.
 My aim is to get a better understanding of the structure of DL topologies, either by extracting layer statistics or by generating visualizations of the network.
 

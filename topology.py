@@ -55,6 +55,7 @@ class Node:
     def set_attr(self, name, val):
         self.attributes[name] = val
 
+
 class PoolingNode(Node):
     def __init__(self, name, type, layer):
         Node.__init__(self, name, type, 'Producer')
@@ -63,6 +64,7 @@ class PoolingNode(Node):
         self.stride = param.stride
         self.pad = param.pad
         self.pool_type = param.pool
+        self.global_pooling = param.global_pooling
 
     def is_same(self, other):
         if not isinstance(other, self.__class__):
@@ -72,16 +74,20 @@ class PoolingNode(Node):
 
     def transform_ifm(self, ifm_shape):
         ofm_shape = copy.deepcopy(ifm_shape)
-        ifmh = ifm_shape[2]
-        ifmw = ifm_shape[3]
-        ofmw = math.ceil((ifmw - self.kernel_size + 2.0 * self.pad) / self.stride) + 1
-        ofmh = math.ceil((ifmh - self.kernel_size + 2.0 * self.pad) / self.stride) + 1
-        ofmh_noceil = (ifmh - self.kernel_size + 2.0 * self.pad) / self.stride + 1
-        # The OFM is square, but I calculate the edges with different rounding strategies.
-        # If the edges have diffe, 'Deconvolution'rent values, then we need to use the "ceiling"/"same" method
-        self.ceiling = (ofmh_noceil != ofmh)
-        ofm_shape[2] = int(ofmh)
-        ofm_shape[3] = int(ofmw)
+        if self.global_pooling:
+            ofm_shape[2] = 1
+            ofm_shape[3] = 1
+        else:
+            ifmh = ifm_shape[2]
+            ifmw = ifm_shape[3]
+            ofmw = math.ceil((ifmw - self.kernel_size + 2.0 * self.pad) / self.stride) + 1
+            ofmh = math.ceil((ifmh - self.kernel_size + 2.0 * self.pad) / self.stride) + 1
+            ofmh_noceil = (ifmh - self.kernel_size + 2.0 * self.pad) / self.stride + 1
+            # The OFM is square, but I calculate the edges with different rounding strategies.
+            # If the edges have diffe, 'Deconvolutgit diffion'rent values, then we need to use the "ceiling"/"same" method
+            self.ceiling = (ofmh_noceil != ofmh)
+            ofm_shape[2] = int(ofmh)
+            ofm_shape[3] = int(ofmw)
         log().debug(str(ifm_shape) + '--> ' + str(ofm_shape))
         return ofm_shape
 
